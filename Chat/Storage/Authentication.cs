@@ -5,7 +5,7 @@ namespace Chat.Storage;
 
 public static class Authentication
 {
-    private const string ConnectionString = @"Data Source=D:\Univ\COURSACHS\RIS\Chat\Chat\Db\users.db;Version=3;";
+    public static string ConnectionString = @"Data Source=D:\Univ\COURSACHS\RIS\Chat\Chat\Db\users.db;Version=3;Pooling=True;";
 
     private const string AuthQuery =
         "SELECT Username, Password, Role FROM Users WHERE Username = @Username AND Password = @Password;";
@@ -30,6 +30,16 @@ public static class Authentication
     {
         InitializeDatabase();
     }
+    
+    private static readonly object DbLock = new();
+
+    private static void ExecuteWithLock(Action action)
+    {
+        lock (DbLock)
+        {
+            action();
+        }
+    }
 
     private static void InitializeDatabase()
     {
@@ -44,54 +54,71 @@ public static class Authentication
     
     public static bool Exists(string username)
     {
-        using var connection = new SQLiteConnection(ConnectionString);
-        connection.Open();
-        
-        using var command = new SQLiteCommand(ExistsQuery, connection);
-        command.Parameters.AddWithValue("@Username", username);
+        var result = false;
+        ExecuteWithLock(() =>
+        {
+            using var connection = new SQLiteConnection(ConnectionString);
+            connection.Open();
 
-        var result = (long)command.ExecuteScalar();
-        return result != 0;
+            using var command = new SQLiteCommand(ExistsQuery, connection);
+            command.Parameters.AddWithValue("@Username", username);
+
+            result = (long)command.ExecuteScalar() != 0;
+        });
+        return result;
     }
 
     public static User? Authenticate(string username, string password)
     {
-        using var connection = new SQLiteConnection(ConnectionString);
-        connection.Open();
+        User? result = null;
+        ExecuteWithLock(() =>
+        {
+            using var connection = new SQLiteConnection(ConnectionString);
+            connection.Open();
 
-        using var command = new SQLiteCommand(AuthQuery, connection);
-        command.Parameters.AddWithValue("@Username", username);
-        command.Parameters.AddWithValue("@Password", password);
+            using var command = new SQLiteCommand(AuthQuery, connection);
+            command.Parameters.AddWithValue("@Username", username);
+            command.Parameters.AddWithValue("@Password", password);
 
-        using var reader = command.ExecuteReader();
-        if (reader.Read())
-            return new User
-            {
-                Username = reader["Username"].ToString()!,
-                Password = reader["Password"].ToString()!,
-                Role = reader["Role"].ToString()!
-            };
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+                result = new User
+                {
+                    Username = reader["Username"].ToString()!,
+                    Password = reader["Password"].ToString()!,
+                    Role = reader["Role"].ToString()!
+                };
 
-        return null;
+        });
+        return result;
     }
 
     public static bool Register(string username, string password, string role)
     {
-        using var connection = new SQLiteConnection(ConnectionString);
-        connection.Open();
+        var result = false;
+        ExecuteWithLock(() =>
+        {
+            using var connection = new SQLiteConnection(ConnectionString);
+            connection.Open();
 
-        using var checkCommand = new SQLiteCommand(CheckUserExistsQuery, connection);
-        checkCommand.Parameters.AddWithValue("@Username", username);
+            using var checkCommand = new SQLiteCommand(CheckUserExistsQuery, connection);
+            checkCommand.Parameters.AddWithValue("@Username", username);
 
-        var userExists = (long)checkCommand.ExecuteScalar() > 0;
-        if (userExists) return false;
+            var userExists = (long)checkCommand.ExecuteScalar() > 0;
+            if (userExists)
+            {
+                result = false;
+                return;
+            }
 
-        using var registerCommand = new SQLiteCommand(RegisterUserQuery, connection);
-        registerCommand.Parameters.AddWithValue("@Username", username);
-        registerCommand.Parameters.AddWithValue("@Password", password);
-        registerCommand.Parameters.AddWithValue("@Role", role);
+            using var registerCommand = new SQLiteCommand(RegisterUserQuery, connection);
+            registerCommand.Parameters.AddWithValue("@Username", username);
+            registerCommand.Parameters.AddWithValue("@Password", password);
+            registerCommand.Parameters.AddWithValue("@Role", role);
 
-        registerCommand.ExecuteNonQuery();
-        return true;
+            registerCommand.ExecuteNonQuery();
+            result = true;
+        });
+        return result;
     }
 }

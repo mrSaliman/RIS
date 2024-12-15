@@ -7,6 +7,7 @@ namespace Chat.Services;
 public class ClientManager
 {
     private readonly ConcurrentDictionary<Socket, User> _clients = new();
+    private int _reqCount;
 
     public void HandleClient(object? state)
     {
@@ -20,8 +21,8 @@ public class ClientManager
             while (true)
             {
                 if (!MessageUtils.ReceiveRequest(clientSocket, out var message)) break;
-                Console.WriteLine($"Received: {message}");
                 RequestHandler.ProcessRequest(message, clientSocket, _clients);
+                Console.WriteLine($"Request {++_reqCount} successfully handled: {clientSocket.RemoteEndPoint}");
             }
         }
         catch (Exception ex)

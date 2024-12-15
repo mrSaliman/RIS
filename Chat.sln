@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "..\Client\Client.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.Tests", "Chat.Tests\Chat.Tests.csproj", "{2552ECC4-1206-45A9-A3FE-1227F567F6D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.StressTests", "Chat.StressTests\Chat.StressTests.csproj", "{7D35E5EB-288A-442E-99E0-7FBAD5134D93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{2552ECC4-1206-45A9-A3FE-1227F567F6D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2552ECC4-1206-45A9-A3FE-1227F567F6D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2552ECC4-1206-45A9-A3FE-1227F567F6D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D35E5EB-288A-442E-99E0-7FBAD5134D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D35E5EB-288A-442E-99E0-7FBAD5134D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D35E5EB-288A-442E-99E0-7FBAD5134D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D35E5EB-288A-442E-99E0-7FBAD5134D93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

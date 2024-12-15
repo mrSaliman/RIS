@@ -4,9 +4,9 @@ namespace Chat.Storage;
 
 public static class MessageHistory
 {
-    private const string ConnectionString = @"Data Source=D:\Univ\COURSACHS\RIS\Chat\Chat\Db\messages.db;Version=3;";
+    public static string ConnectionString = @"Data Source=D:\Univ\COURSACHS\RIS\Chat\Chat\Db\messages.db;Version=3;Pooling=True;";
 
-    private const string CreateTableQuery = """
+    public const string CreateTableQuery = """
                                             CREATE TABLE IF NOT EXISTS MessageHistory (
                                                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                                                 Username TEXT NOT NULL,
@@ -28,6 +28,16 @@ public static class MessageHistory
     static MessageHistory()
     {
         InitializeDatabase();
+    }
+    
+    private static readonly object DbLock = new();
+
+    private static void ExecuteWithLock(Action action)
+    {
+        lock (DbLock)
+        {
+            action();
+        }
     }
 
     private static void InitializeDatabase()
@@ -56,15 +66,18 @@ public static class MessageHistory
 
     public static void LogMessage(string username, string message, byte[]? image = null)
     {
-        using var connection = new SQLiteConnection(ConnectionString);
-        connection.Open();
+        ExecuteWithLock(() =>
+        {
+            using var connection = new SQLiteConnection(ConnectionString);
+            connection.Open();
 
-        using var command = new SQLiteCommand(InsertMessageQuery, connection);
-        command.Parameters.AddWithValue("@Username", username);
-        command.Parameters.AddWithValue("@Message", message);
-        command.Parameters.AddWithValue("@Image", image ?? (object)DBNull.Value);
+            using var command = new SQLiteCommand(InsertMessageQuery, connection);
+            command.Parameters.AddWithValue("@Username", username);
+            command.Parameters.AddWithValue("@Message", message);
+            command.Parameters.AddWithValue("@Image", image ?? (object)DBNull.Value);
 
-        command.ExecuteNonQuery();
+            command.ExecuteNonQuery();
+        });
     }
 
 
@@ -72,19 +85,23 @@ public static class MessageHistory
     {
         var messages = new List<(string, string?)>();
 
-        using var connection = new SQLiteConnection(ConnectionString);
-        connection.Open();
-
-        using var command = new SQLiteCommand(GetMessagesQuery, connection);
-        command.Parameters.AddWithValue("@Username", username);
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
+        ExecuteWithLock(() =>
         {
-            var message = reader["Message"].ToString()!;
-            var base64Image = reader["Image"] is byte[] image ? Convert.ToBase64String(image) : null; // Конвертируем в Base64
-            messages.Add((message, base64Image));
-        }
+            using var connection = new SQLiteConnection(ConnectionString);
+            connection.Open();
+
+            using var command = new SQLiteCommand(GetMessagesQuery, connection);
+            command.Parameters.AddWithValue("@Username", username);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var message = reader["Message"].ToString()!;
+                var base64Image =
+                    reader["Image"] is byte[] image ? Convert.ToBase64String(image) : null; // Конвертируем в Base64
+                messages.Add((message, base64Image));
+            }
+        });
 
         return messages;
     }

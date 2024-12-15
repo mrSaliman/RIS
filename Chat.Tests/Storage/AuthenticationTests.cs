@@ -7,7 +7,7 @@ namespace Chat.Tests.Storage;
     [TestFixture]
     public class AuthenticationTests
     {
-        private const string TestConnectionString = @"Data Source=:memory:Version=3;";
+        private const string TestConnectionString = @"Data Source=D:\Univ\COURSACHS\RIS\Chat\Chat.Tests\DB\Auth.db";
         private SQLiteConnection _connection;
 
         [SetUp]
@@ -16,15 +16,18 @@ namespace Chat.Tests.Storage;
             // Настройка тестовой базы данных
             _connection = new SQLiteConnection(TestConnectionString);
             _connection.Open();
+            
+            using (var dropCommand = new SQLiteCommand("DROP TABLE IF EXISTS Users;", _connection))
+            {
+                dropCommand.ExecuteNonQuery();
+            }
 
             // Создание таблицы Users
             using var command = new SQLiteCommand(Authentication.CreateTableQuery, _connection);
             command.ExecuteNonQuery();
 
             // Обновление строки подключения для тестов
-            typeof(Authentication).GetField("ConnectionString", 
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
-                ?.SetValue(null, TestConnectionString);
+            Authentication.ConnectionString = TestConnectionString;
         }
 
         [TearDown]
@@ -37,11 +40,11 @@ namespace Chat.Tests.Storage;
         [Test]
         public void Register_ShouldAddNewUser()
         {
-            var result = Authentication.Register("testUser", "password", "user");
+            var result = Authentication.Register("test2User", "password", "user");
 
             Assert.That(result, Is.True);
 
-            using var checkCommand = new SQLiteCommand("SELECT COUNT(*) FROM Users WHERE Username = 'testUser';", _connection);
+            using var checkCommand = new SQLiteCommand("SELECT COUNT(*) FROM Users WHERE Username = 'test2User';", _connection);
             var count = (long)checkCommand.ExecuteScalar();
             Assert.That(count, Is.EqualTo(1));
         }

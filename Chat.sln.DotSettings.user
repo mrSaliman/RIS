@@ -2,6 +2,7 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.8\ref\net8.0\System.Text.Json.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\sloi2\AppData\Local\JetBrains\Rider2024.1\resharper-host\temp\Rider\vAny\CoverageData\_Chat.-271632389\Snapshot\snapshot.utdcvr</s:String>
 	<s:Boolean x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/ShowAdvancedOptions/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=C47DF438_002D1FC6_002D4EB5_002D983A_002D0723B562E069/@EntryIndexedValue">Client.Tests</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=E647D7F3_002D17B0_002D42C6_002DB966_002D43E7993422E9/@EntryIndexedValue">Chat.Tests</s:String>
@@ -11,5 +12,7 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::2552ECC4-1206-45A9-A3FE-1227F567F6D7::net8.0::Chat.Tests.Core.TcpChatServerTest.ServerStartTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::2552ECC4-1206-45A9-A3FE-1227F567F6D7::net8.0::Chat.Tests.Storage.AuthenticationTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::2552ECC4-1206-45A9-A3FE-1227F567F6D7::net8.0::Chat.Tests.Storage.MessageHistoryTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::2552ECC4-1206-45A9-A3FE-1227F567F6D7::net8.0::Chat.Tests.Core.TcpChatServerTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
