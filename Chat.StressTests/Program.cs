@@ -1,6 +1,8 @@
-﻿using System.Net.Sockets;
+﻿using System.Diagnostics;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using Chat.Core;
 using Chat.Models;
 
 namespace Chat.StressTests;
@@ -9,6 +11,13 @@ internal abstract class Program
 {
     public static void Main(string[] args)
     {
+        var chatServer = new TcpChatServer(8080);
+        ThreadPool.QueueUserWorkItem(chatServer.Start);
+        Thread.Sleep(3000);
+
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+
         const string ip = "127.0.0.1";
         const int port = 8080;
 
@@ -37,7 +46,9 @@ internal abstract class Program
 
             Console.WriteLine($"Отправлено {(i + 1) * clients.Count} запросов");
         }
-
+        Console.Read();
+        stopWatch.Stop();
+        Console.WriteLine($"Обработка запросов заняла: {stopWatch.Elapsed}");
         Console.Read();
     }
 

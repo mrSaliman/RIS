@@ -12,7 +12,7 @@ public static class RequestHandler
     {
         var baseRequest = MessageUtils.DeserializeRequest(message);
         if (baseRequest == null) return;
-        Console.WriteLine($"Started processing: {clientSocket.RemoteEndPoint}");
+        //Console.WriteLine($"Started processing: {clientSocket.RemoteEndPoint}");
         switch (baseRequest.Type)
         {
             case "auth":
@@ -112,7 +112,7 @@ public static class RequestHandler
             HasImage = request.HasImage,
             Image = request.Image
         };
-        Console.WriteLine($"Started broadcasting: {clientSocket.RemoteEndPoint}");
+        //Console.WriteLine($"Started broadcasting: {clientSocket.RemoteEndPoint}");
         BroadcastMessage(response, clients.Keys);
     }
 
@@ -172,6 +172,6 @@ public static class RequestHandler
     private static void BroadcastMessage(object message, IEnumerable<Socket> clients)
     {
         var responseJson = JsonSerializer.Serialize(message);
-        foreach (var client in clients) continue; //MessageUtils.SendResponse(client, responseJson);
+        //foreach (var client in clients) MessageUtils.SendResponse(client, responseJson);
     }
 }

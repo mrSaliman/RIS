@@ -8,7 +8,7 @@ public class TcpChatServer(int port)
 {
     private readonly ClientManager _clientManager = new();
 
-    public void Start()
+    public void Start(object? smth = null)
     {
         var listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         listener.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);

@@ -21,6 +21,7 @@ public class ClientManager
             while (true)
             {
                 if (!MessageUtils.ReceiveRequest(clientSocket, out var message)) break;
+                //Console.WriteLine($"Received: {message}");
                 RequestHandler.ProcessRequest(message, clientSocket, _clients);
                 Console.WriteLine($"Request {++_reqCount} successfully handled: {clientSocket.RemoteEndPoint}");
             }
